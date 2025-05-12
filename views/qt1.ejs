@@ -1,0 +1,63 @@
+<div class="qtDiv" id="opX1">
+  <div class="opdiv opL" id="opXL1">
+    <des>Artwork</des>
+  </div>
+  <div class="opdiv opM opXM" id="opXM1">
+    <input type="number" class="wid80" name="awCost" id="awCost" min="0" />
+  </div>
+  <div class="opdiv opR" id="opXR1">
+    <des class="cos" id="cosX1"></des>
+  </div>
+</div>
+<div class="qtDiv" id="op1">
+  <div class="opdiv opL" id="op1L">
+    <des>Plates</des>
+  </div>
+  <div class="opdiv opM" id="op1M">
+    <select name="slctPlate" class="slctPlate"></select>
+    <span name="slctPlatePrice" id="slctPlatePrice"></span>
+    <des>*</des>
+    <input
+      type="number"
+      name="pltCnt"
+      id="pltCnt"
+      class="wid40"
+      min="1"
+      value="1"
+    />
+  </div>
+  <div class="opdiv opR" id="op1R">
+    <des class="cos" id="cos1"></des>
+  </div>
+</div>
+<script type="module">
+  $("#op1M").on("change", calOp1);
+
+  var allPlates = [];
+  function addPlate(size, price) {
+    this.size = size;
+    this.price = price;
+    allPlates.push(this);
+  }
+  new addPlate(" 24 x 36 ", 2500);
+  new addPlate(" 20 x 30 ", 2000);
+  function loadAllPlates() {
+    var selectInnerHtml = "";
+    for (let i = 0; i < allPlates.length; i++) {
+      selectInnerHtml =
+        selectInnerHtml + "<option>" + allPlates[i].size + "</option>";
+    }
+    $(".slctPlate").html(selectInnerHtml);
+  }
+
+  function calOp1() {
+    var sltPlID = $(".slctPlate option:selected").index();
+    var thePrice = allPlates[sltPlID].price;
+    $("#slctPlatePrice").html(thePrice.toLocaleString() + " lkr");
+    var pltCnt = Number($("#pltCnt").val());
+    $("#cos1").html((pltCnt * thePrice).toLocaleString());
+  }
+
+  loadAllPlates();
+  calOp1();
+</script>

@@ -1,0 +1,55 @@
+<div class="qtDiv op2">
+  <div class="opdiv opL" id="op2L">
+    <des>Paper <%= idx %></des>
+  </div>
+  <div class="opdiv opM" id= "<%= "op2M"+idx %>">
+  <select
+    class="slctPaper"
+    name="slctPaper<%=idx %>"
+    id="slctPaper<%=idx %>"
+  ></select>
+  <span name="slctPaperPrice<%=idx %>" id="slctPaperPrice<%=idx %>"></span>
+  <des>/</des>
+  <select name="slctRm<%=idx %>" id="slctRm<%=idx %>">
+    <option>500</option>
+    <option>100</option>
+  </select>
+  <des>*</des>
+  <input
+    type="number"
+    class="wid80"
+    name="pprcount<%=idx %>"
+    id="pprcount<%=idx %>"
+    min="0"
+  />
+  <des>+</des>
+  <input
+    type="number"
+    class="wid60"
+    name="extraPpr<%=idx %>"
+    id="extraPpr<%=idx %>"
+    min="0"
+  />
+</div>
+<div class="opdiv opR" id="op2R">
+  <des class="cos" id="cos2x<%=idx%>"></des>
+</div>
+</div>
+
+<script type="module">
+  const idxx = "<%= idx %>";
+  $("#op2M" + idxx).on("change", calOp2);
+
+  function calOp2() {
+    var thePrice = Number(
+      $("#slctPaper" + idxx + " option:selected").data("num")
+    );
+    $("#slctPaperPrice" + idxx).html(thePrice.toLocaleString() + " lkr");
+    var pprCount = Number($("#pprcount" + idxx).val());
+    var extraPpr = Number($("#extraPpr" + idxx).val());
+    var reem = Number($("#slctRm" + idxx).val());
+    var outcome = (thePrice / reem) * (pprCount + extraPpr);
+    $("#cos2x" + idxx).html(outcome.toLocaleString());
+  }
+  calOp2();
+</script>

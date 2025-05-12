@@ -1,0 +1,97 @@
+<div id="upsCal">
+  <div class="upsCells"><h5 class="midTxt">Sheet</h5></div>
+  <div class="upsCells">
+    <input type="number" class="wid40 midInp" value="24" id="shH" />
+  </div>
+  <div class="upsCells">
+    <input type="number" class="wid40 midInp" value="36" id="shW" />
+  </div>
+
+  <div class="upsCells">
+    <select class="midInp" id="shUnit">
+      <option>inch</option>
+      <option>mm</option>
+    </select>
+  </div>
+
+  <div class="upsCells"><h6 class="midTxt" id="shHCon">0</h6></div>
+  <div class="upsCells"><h6 class="midTxt" id="shWCon">0</h6></div>
+  <div class="upsCells"><h5 class="midTxt">Sample</h5></div>
+  <div class="upsCells">
+    <input type="number" class="wid40 midInp" value="1" id="smH" />
+  </div>
+  <div class="upsCells">
+    <input type="number" class="wid40 midInp" value="1" id="smW" />
+  </div>
+
+  <div class="upsCells">
+    <select class="midInp" id="smUnit">
+      <option>inch</option>
+      <option>mm</option>
+    </select>
+  </div>
+  <div class="upsCells"><h6 class="midTxt" id="smHCon">0</h6></div>
+  <div class="upsCells"><h6 class="midTxt" id="smWCon">0</h6></div>
+  <div class="upsCells"><h5 class="midTxt" id="off1">0</h5></div>
+  <div class="upsCells"><h5 class="midTxt" id="res11">0</h5></div>
+  <div class="upsCells"><h5 class="midTxt" id="res12">0</h5></div>
+  <div class="upsCells"><h5 class="midTxt" id="res1">0</h5></div>
+  <div class="upsCells"></div>
+  <div class="upsCells"></div>
+  <div class="upsCells"><h5 class="midTxt" id="off2">0</h5></div>
+  <div class="upsCells"><h5 class="midTxt" id="res21">0</h5></div>
+  <div class="upsCells"><h5 class="midTxt" id="res22">0</h5></div>
+  <div class="upsCells"><h5 class="midTxt" id="res2">0</h5></div>
+
+  <div class="upsCells"></div>
+  <div class="upsCells"><h4 class="midTxt" id="maxUps">0</h4></div>
+  <br />
+</div>
+<script type="module">
+  $("#upsCal").on("change", calUPs);
+  function calUPs() {
+    var shH = Number($("#shH").val());
+    var shW = Number($("#shW").val());
+    var smH = Number($("#smH").val());
+    var smW = Number($("#smW").val());
+
+    if ($("#shUnit :selected").text() === "mm") {
+      $("#shHCon").html((shH / 25.4).toFixed(2) + "''");
+      $("#shWCon").html((shW / 25.4).toFixed(2) + "''");
+    } else {
+      shH = (shH * 25.4).toFixed(1);
+      shW = (shW * 25.4).toFixed(1);
+      $("#shHCon").html(shH + "mm");
+      $("#shWCon").html(shW + "mm");
+    }
+    if ($("#smUnit :selected").text() === "mm") {
+      $("#smHCon").html((smH / 25.4).toFixed(2) + "''");
+      $("#smWCon").html((smW / 25.4).toFixed(2) + "''");
+    } else {
+      smH = (smH * 25.4).toFixed(1);
+      smW = (smW * 25.4).toFixed(1);
+      $("#smHCon").html(smH + "mm");
+      $("#smWCon").html(smW + "mm");
+    }
+    var res11 = (shH / smH).toFixed(2);
+    var res12 = (shW / smW).toFixed(2);
+    var res21 = (shH / smW).toFixed(2);
+    var res22 = (shW / smH).toFixed(2);
+    var res1 = Math.floor(res11) * Math.floor(res12);
+    var res2 = Math.floor(res21) * Math.floor(res22);
+    var off1H = shH - Math.floor(res11) * smH;
+    var off1W = shW - Math.floor(res12) * smW;
+    var off2H = shH - Math.floor(res21) * smW;
+    var off2W = shW - Math.floor(res22) * smH;
+    $("#res11").html(Math.round(res11 * 100) / 100);
+    $("#res12").html(Math.round(res12 * 100) / 100);
+    $("#res1").html(res1);
+    $("#res21").html(Math.round(res21 * 100) / 100);
+    $("#res22").html(Math.round(res22 * 100) / 100);
+    $("#res2").html(res2);
+    $("#off1").html(Math.round(off1H) + "-" + Math.round(off1W));
+    $("#off2").html(Math.round(off2H) + "-" + Math.round(off2W));
+    $("#maxUps").html(Math.floor((shH * shW) / (smH * smW)));
+  }
+  calUPs();
+</script>

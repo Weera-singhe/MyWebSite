@@ -1,0 +1,110 @@
+* {
+  font-weight: bold;
+}
+.themeClr {
+  background-color: chocolate;
+}
+#headLine {
+  width: 100%;
+  height: 80px;
+  border-radius: 10px;
+}
+.navBttn {
+  background-color: burlywood;
+  border-color: white;
+  border-width: 5px;
+  height: 50px;
+  width: 80px;
+  border-radius: 10px;
+  margin: 0px 30px;
+  float: left;
+  position: relative;
+  top: 15px;
+}
+.right {
+  float: right;
+}
+
+.qtDiv {
+  margin: 15px;
+}
+input {
+  border: 2px solid black;
+  border-radius: 3px;
+}
+label {
+  margin-left: 20px;
+}
+
+.wid20 {
+  width: 20px;
+}
+.wid40 {
+  width: 40px;
+}
+.wid60 {
+  width: 60px;
+}
+.wid80 {
+  width: 80px;
+}
+.wid1200 {
+  width: 120px;
+}
+input[type="checkbox"] {
+  position: relative;
+  top: 2px;
+}
+.opdiv {
+  background-color: burlywood;
+  height: 30px;
+  line-height: 30px;
+  margin: 2px 5px;
+  float: left;
+  border-radius: 2px;
+}
+.opL {
+  width: 100px;
+  clear: both;
+}
+.opM {
+  width: 600px;
+}
+.opR {
+  width: 150px;
+}
+#blanks {
+  margin-left: 625px;
+}
+des {
+  margin: 5px;
+}
+.midTxt {
+  display: flex;
+  justify-content: center;
+  margin: 0px;
+}
+.midInp {
+  display: block;
+  margin: auto;
+}
+.opR {
+  text-align: right;
+}
+#upsCal {
+  width: 360px;
+  height: 120px;
+  border: 2px solid black;
+  border-radius: 5px;
+  float: right;
+  margin: 20px;
+}
+.upsCells {
+  background-color: darkkhaki;
+  width: 55px;
+  height: 25px;
+  line-height: 25px;
+  margin: 2.5px;
+  float: left;
+  border-radius: 3px;
+}

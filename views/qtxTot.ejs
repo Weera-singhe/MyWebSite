@@ -1,0 +1,26 @@
+<div class="qtDiv" id="blanks">
+  <div class="opdiv opL" id="">
+    <des>Total</des>
+  </div>
+  <div class="opdiv opR" id="">
+    <des id="cosTot"></des>
+  </div>
+</div>
+
+<script type="module">
+  $("#chooseOp").on("change", calOpL);
+  $(".opM").on("change", calOpL);
+  function calOpL() {
+    let sum = 0;
+    $(".cos").each(function () {
+      if ($(this).is(":visible")) {
+        let val = Number($(this).html().replace(/,/g, ""));
+        if (!isNaN(val)) {
+          sum += val;
+        }
+      }
+    });
+    $("#cosTot").html(sum.toLocaleString());
+  }
+  calOpL();
+</script>

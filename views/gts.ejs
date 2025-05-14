@@ -6,5 +6,37 @@
     <meta name="gts" content="width=device-width, initial-scale=1.0" />
     <title>GTS</title>
   </head>
-  <body></body>
+  <body>
+    <input type="text" id="newName" placeholder="Enter name" />
+    <input type="number" id="newPrice" placeholder="Enter price" />
+    <button id="addItem">Add Item</button>
+
+    <% allpprs.forEach(function(ppr) { %>
+    <h3><%=`${ppr.name} ${ppr.gsm}gsm ${ppr.sizeW}x${ppr.sizeH}`%></h3>
+    <% }); %>
+  </body>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
+  <script type="module">
+    $("#addItem").on("click", addNewPaper);
+
+    function addNewPaper() {
+      const name = $("#newName").val().trim();
+      const price = parseFloat($("#newPrice").val());
+
+      if (!name || isNaN(price)) {
+        console.log("Please enter both a valid name and price.");
+        return;
+      }
+      $.post("/additemx", { name, price }, function (data) {
+        console.log("yoo");
+        if (data.success) {
+          console.log("Item added!");
+          location.reload(); // Refresh to show updated select
+        } else {
+          console.log("Error adding item.");
+        }
+      });
+    }
+  </script>
 </html>

@@ -1,6 +1,6 @@
 [
   {
-    "name": "bank",
+    "name": "Bank",
     "gsm": 60,
     "sizeH": 24,
     "sizeW": 36,
@@ -9,7 +9,7 @@
     "price": 16400
   },
   {
-    "name": "art",
+    "name": "Art",
     "gsm": 70,
     "sizeH": 24,
     "sizeW": 34,
@@ -18,7 +18,7 @@
     "price": 13000
   },
   {
-    "name": "bank",
+    "name": "Bank",
     "gsm": 80,
     "sizeH": 20,
     "sizeW": 36,
@@ -27,7 +27,12 @@
     "price": 16000
   },
   {
-    "name": "k",
-    "price": "9"
+    "name": "Art",
+    "gsm": "120",
+    "sizeH": "24",
+    "sizeW": "36",
+    "brand": "Indian",
+    "stock": "20000",
+    "price": "14500"
   }
 ]

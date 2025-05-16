@@ -1,12 +1,10 @@
 import express from "express";
 import fs from "fs";
 
-//import { customersArr } from "./public/data/customers.json";
-
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const allPaperPath = "./public/allpapers.json";
+const allPapersPath = __dirname + "/public/allpapers.json";
 
 const app = express();
 const port = 1999;
@@ -21,33 +19,41 @@ app.get("/", (req, res) => {
 });
 
 app.get("/stock", (req, res) => {
-  const allpprs = JSON.parse(fs.readFileSync(allPaperPath, "utf8"));
-  res.render("gts.ejs", { allpprs });
+  const allPapersJson = JSON.parse(fs.readFileSync(allPapersPath, "utf8"));
+  res.render("gts.ejs", { allPapers: allPapersJson });
 });
 
 app.get("/qt", (req, res) => {
-  res.render("qt.ejs", {});
+  const allPapersJson = JSON.parse(fs.readFileSync(allPapersPath, "utf8"));
+  res.render("qt.ejs", { allPapers: allPapersJson });
 });
 
 app.post("/qt", (req, res) => {
-  res.render("qt.ejs", {});
+  const allPapersJson = JSON.parse(fs.readFileSync(allPapersPath, "utf8"));
+  res.render("qt.ejs", { allPapers: allPapersJson });
 });
 app.post("/additemx", (req, res) => {
-  const { name, price } = req.body;
+  const { name, gsm, sizeH, sizeW, brand, stock, price } = req.body;
 
-  fs.readFile(allPaperPath, "utf8", (err, json) => {
-    if (err) return res.json({ success: false });
+  fs.readFile(allPapersPath, "utf8", (err, json) => {
+    if (err) {
+      console.error("Error reading file: " + err);
+      return;
+    }
 
     let items = JSON.parse(json);
-    items.push({ name, price });
+    items.push({ name, gsm, sizeH, sizeW, brand, stock, price });
 
-    fs.writeFile(allPaperPath, JSON.stringify(items, null, 2), (err) => {
-      if (err) return res.json({ success: false });
+    fs.writeFile(allPapersPath, JSON.stringify(items, null, 2), (err) => {
+      if (err) {
+        console.error("Error writing file: " + err);
+        return;
+      }
       res.json({ success: true });
     });
   });
 });
 
 app.listen(port, () => {
-  console.log("listening...");
+  console.log("listening... on port 1999");
 });

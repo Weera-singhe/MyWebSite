@@ -24,13 +24,16 @@ app.get("/stock", (req, res) => {
 });
 
 app.get("/qt", (req, res) => {
-  const allPapersJson = JSON.parse(fs.readFileSync(allPapersPath, "utf8"));
-  res.render("qt.ejs", { allPapers: allPapersJson });
+  const apj = JSON.parse(fs.readFileSync(allPapersPath, "utf8"));
+  var slctPprHtml = "";
+  for (let i = 0; i < apj.length; i++) {
+    slctPprHtml += `<option data-num='${apj[i].price}'>${apj[i].name} ${apj[i].gsm}gsm ${apj[i].brand} ${apj[i].sizeH}x${apj[i].sizeW}</option>`;
+  }
+  res.render("qt.ejs", { slctPprHtml });
 });
 
 app.post("/qt", (req, res) => {
-  const allPapersJson = JSON.parse(fs.readFileSync(allPapersPath, "utf8"));
-  res.render("qt.ejs", { allPapers: allPapersJson });
+  res.redirect("/qt");
 });
 app.post("/additemx", (req, res) => {
   const { name, gsm, sizeH, sizeW, brand, stock, price } = req.body;

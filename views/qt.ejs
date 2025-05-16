@@ -57,7 +57,9 @@
     <div id="div4op1"><%- include("qt1.ejs") %></div>
     <div id="div4op2">
       <% for( let i = 1; i <11; i++ ) { %>
-      <div id="div4op2x<%= i %>"><%- include("qt2.ejs",{idx:i}) %></div>
+      <div id="div4op2x<%= i %>">
+        <%- include("qt2.ejs",{idx:i,slctPprHtml}) %>
+      </div>
       <% } %>
     </div>
     <br />

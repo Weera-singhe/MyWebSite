@@ -1,0 +1,53 @@
+<div class="qtDiv" id="op3">
+  <div class="opdiv opL" id="op3L">
+    <des>Print</des>
+  </div>
+  <div class="opdiv opM" id="op3M">
+    <select name="slctMchine" id="slctMchine">
+      <option>SORD</option>
+      <option>SORDZ</option>
+      <option>CORD</option>
+    </select>
+    <input
+      type="number"
+      class="wid80"
+      name="impressions"
+      id="impressions"
+      value="1"
+    />
+    <des>*</des>
+    <input type="number" class="wid30" name="pltCnt3" id="pltCnt3" value="1" />
+    <span>Plates</span>
+    <des>*</des>
+    <label for="perImpr">rs</label>
+    <input type="number" class="wid30" name="perImpr" id="perImpr" value="1" />
+  </div>
+  <div class="opdiv opR" id="op3R">
+    <des class="cos" id="cos3"></des>
+  </div>
+</div>
+
+<script type="module">
+  $("#op3M").on("change", calOp3);
+  $("#pltCnt").on("change", calOp3z);
+
+  function calOp3() {
+    var cost =
+      Number($("#impressions").val()) *
+      Number($("#pltCnt3").val()) *
+      Number($("#perImpr").val());
+    var minCost = 2000 * Number($("#pltCnt3").val());
+    if (cost < minCost) {
+      cost = minCost;
+      $("#cos3").css("color", "firebrick");
+    } else {
+      $("#cos3").css("color", "black");
+    }
+    $("#cos3").html(cost.toLocaleString());
+  }
+  function calOp3z() {
+    $("#pltCnt3").val($("#pltCnt").val());
+    calOp3();
+  }
+  calOp3();
+</script>

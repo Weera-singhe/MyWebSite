@@ -21,7 +21,7 @@
       type="number"
       name="pltCnt"
       id="pltCnt"
-      class="wid40"
+      class="wid30"
       min="1"
       value="1"
     />
@@ -33,14 +33,10 @@
 <script type="module">
   $("#op1M").on("change", calOp1);
 
-  var allPlates = [];
-  function addPlate(size, price) {
-    this.size = size;
-    this.price = price;
-    allPlates.push(this);
-  }
-  new addPlate(" 24 x 36 ", 2500);
-  new addPlate(" 20 x 30 ", 2000);
+  var allPlates = [
+    { size: " 24 x 36 ", price: 2500 },
+    { size: " 20 x 30 ", price: 2000 },
+  ];
   function loadAllPlates() {
     var selectInnerHtml = "";
     for (let i = 0; i < allPlates.length; i++) {

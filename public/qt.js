@@ -3,6 +3,7 @@ $("#chooseOp").on("change", chooseOp);
 var idCB = [
   "#incPlates",
   "#incPaper",
+  "#incPrint",
   "#incAw",
   "#incCut",
   "#incGt",
@@ -13,6 +14,7 @@ var idCB = [
 var idOP = [
   "#op1",
   ".op2",
+  "#op3",
   "#opX1",
   "#opX2",
   "#opX3",

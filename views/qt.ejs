@@ -37,6 +37,9 @@
         class="wid40"
       />
 
+      <label for="incPrint">Printing:</label>
+      <input type="checkbox" name="incPrint" checked="true" id="incPrint" />
+
       <label for="incCut">Cutting:</label>
       <input type="checkbox" name="incCut" checked="true" id="incCut" />
 
@@ -53,7 +56,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="module" src="/qt.js" charset="utf-8"></script>
 
-    <br />
     <div id="div4op1"><%- include("qt1.ejs") %></div>
     <div id="div4op2">
       <% for( let i = 1; i <11; i++ ) { %>
@@ -62,7 +64,7 @@
       </div>
       <% } %>
     </div>
-    <br />
+    <div id="div4op3"><%- include("qt3.ejs") %></div>
 
     <div id="div4opX"><%- include("qtX.ejs") %></div>
     <div id="div4opxTot"><%- include("qtxTot.ejs") %></div>

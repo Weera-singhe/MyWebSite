@@ -1,9 +1,23 @@
 <div class="qtDiv" id="blanks">
-  <div class="opdiv opL" id="">
+  <div class="opdiv opL">
     <des>Total</des>
   </div>
-  <div class="opdiv opR" id="">
+  <div class="opdiv opR">
     <des id="cosTot"></des>
+  </div>
+</div>
+<div class="qtDiv" id="blanks">
+  <div class="opdiv opL">
+    <des>Profit</des>
+  </div>
+  <div class="opdiv opR">
+    <input
+      type="number"
+      class="wid80"
+      name="profitNum"
+      id="profitNum"
+      value="1"
+    />
   </div>
 </div>
 
@@ -23,4 +37,7 @@
     $("#cosTot").html(sum.toLocaleString());
   }
   calOpL();
+  /*$(".withCommas").on("input", function () {
+    console.log($(this).val());
+  });*/
 </script>

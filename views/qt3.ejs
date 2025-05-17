@@ -9,8 +9,8 @@
       <option>CORD</option>
     </select>
     <input
-      type="number"
-      class="wid80"
+      type="text"
+      class="wid80 withCommas"
       name="impressions"
       id="impressions"
       value="1"
@@ -30,12 +30,12 @@
 <script type="module">
   $("#op3M").on("change", calOp3);
   $("#pltCnt").on("change", calOp3z);
+  var deci = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
 
   function calOp3() {
+    let impressions = Number($("#impressions").val().replace(/,/g, ""));
     var cost =
-      Number($("#impressions").val()) *
-      Number($("#pltCnt3").val()) *
-      Number($("#perImpr").val());
+      impressions * Number($("#pltCnt3").val()) * Number($("#perImpr").val());
     var minCost = 2000 * Number($("#pltCnt3").val());
     if (cost < minCost) {
       cost = minCost;
@@ -43,7 +43,7 @@
     } else {
       $("#cos3").css("color", "black");
     }
-    $("#cos3").html(cost.toLocaleString());
+    $("#cos3").html(cost.toLocaleString("en-US", deci));
   }
   function calOp3z() {
     $("#pltCnt3").val($("#pltCnt").val());

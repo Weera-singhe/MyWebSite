@@ -31,6 +31,8 @@
   </div>
 </div>
 <script type="module">
+  var deci = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+
   $("#op1M").on("change", calOp1);
 
   var allPlates = [
@@ -51,7 +53,7 @@
     var thePrice = allPlates[sltPlID].price;
     $("#slctPlatePrice").html(thePrice.toLocaleString() + " lkr");
     var pltCnt = Number($("#pltCnt").val());
-    $("#cos1").html((pltCnt * thePrice).toLocaleString());
+    $("#cos1").html((pltCnt * thePrice).toLocaleString("en-US", deci));
   }
 
   loadAllPlates();

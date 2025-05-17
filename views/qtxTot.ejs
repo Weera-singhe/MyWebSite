@@ -1,31 +1,72 @@
-<div class="qtDiv" id="blanks">
-  <div class="opdiv opL">
-    <des>Total</des>
+<div id="blanks">
+  <div class="opdiv opTot">
+    <des>Cost</des>
   </div>
   <div class="opdiv opR">
     <des id="cosTot"></des>
   </div>
 </div>
-<div class="qtDiv" id="blanks">
-  <div class="opdiv opL">
-    <des>Profit</des>
-  </div>
-  <div class="opdiv opR">
-    <input
-      type="number"
-      class="wid80"
+<%# /////////////////////////////////////// %>
+<div id="blanks">
+  <div class="opdiv opTot">
+    <des>Profit</des
+    ><input
+      type="text"
+      class="wid80 withCommas txtRight"
       name="profitNum"
       id="profitNum"
-      value="1"
     />
+    <label for="profitNum" id="profitPerc" style="font-size: smaller">0%</label>
+  </div>
+  <div class="opdiv opR">
+    <des id="disProfNum" style="font-size: small"></des>
+  </div>
+</div>
+<div id="blanks">
+  <div class="opdiv opTot">
+    <des>Total</des>
+  </div>
+  <div class="opdiv opR">
+    <des id="finalTot" style="font-size: larger"></des>
   </div>
 </div>
 
+<%# /////////////////////////////////////// %>
+<div id="blanks">
+  <div class="opdiv opTot">
+    <des>Units</des
+    ><input
+      type="text"
+      class="wid60 withCommas txtRight"
+      name="unitsNum"
+      id="unitsNum"
+      value="1"
+    />
+  </div>
+  <div class="opdiv opR">
+    <des id="disUnitNum" style="font-size: small"></des>
+  </div>
+</div>
+<div id="blanks">
+  <div class="opdiv opTot">
+    <des>PerUnit</des>
+  </div>
+  <div class="opdiv opR">
+    <des id="perUnit" style="font-size: larger"></des>
+  </div>
+</div>
+<%# /////////////////////////////////////// %>
+
 <script type="module">
-  $("#chooseOp").on("change", calOpL);
-  $(".opM").on("change", calOpL);
-  function calOpL() {
-    let sum = 0;
+  $("#chooseOp").on("change", CalOpL);
+  $(".opM").on("change", CalOpL);
+  $("#profitNum").on("change", CalFinTotPer);
+  $("#unitsNum").on("change", CalPerUnit);
+  var deci = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+  var sum;
+  var finTot;
+  function CalOpL() {
+    sum = 0;
     $(".cos").each(function () {
       if ($(this).is(":visible")) {
         let val = Number($(this).html().replace(/,/g, ""));
@@ -34,10 +75,24 @@
         }
       }
     });
-    $("#cosTot").html(sum.toLocaleString());
+    $("#cosTot").html(sum.toLocaleString("en-US", deci));
+    CalFinTotPer();
   }
-  calOpL();
-  /*$(".withCommas").on("input", function () {
-    console.log($(this).val());
-  });*/
+  function CalFinTotPer() {
+    let profitNum = Number($("#profitNum").val().replace(/,/g, ""));
+
+    $("#disProfNum").html(profitNum.toLocaleString("en-US", deci));
+    finTot = sum + profitNum;
+    $("#finalTot").html(finTot.toLocaleString("en-US", deci));
+    let perc = ((profitNum / sum) * 100).toFixed(1);
+    $("#profitPerc").html(perc + "%");
+    CalPerUnit();
+  }
+  function CalPerUnit() {
+    let unitsNum = Number($("#unitsNum").val().replace(/,/g, ""));
+    $("#disUnitNum").html("/ " + unitsNum.toLocaleString("en"));
+    let perUnit = finTot / unitsNum;
+    $("#perUnit").html(perUnit.toLocaleString("en-US", deci));
+  }
+  CalOpL();
 </script>

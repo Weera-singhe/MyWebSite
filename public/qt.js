@@ -43,4 +43,27 @@ function chooseOp2x() {
     }
   }
 }
+function TodayDate() {
+  const today = new Date().toISOString().split("T")[0];
+  $("input[type='date'").val(today);
+}
+
+function tests() {
+  let val1 = "222";
+  let val2 = val1 + 2;
+  let val3 = Number(val1) + 2;
+  let val4 = parseFloat(val1) + 2;
+  console.log(`${val1}  ${val2}  ${val3}  ${val4}  `);
+}
+
 chooseOp();
+TodayDate();
+
+$(".withCommas").on("input", function () {
+  const raw = $(this).val();
+  const formatted = raw
+    .replace(/[^0-9]/g, "")
+    .replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
+  $(this).val(formatted);
+});

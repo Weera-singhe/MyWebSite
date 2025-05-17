@@ -1,0 +1,55 @@
+{
+  "types": [
+    "Bank",
+    "Art",
+    "NCR Top",
+    "NCR Mid",
+    "NCR Bttm",
+    "Art Board"
+  ],
+  "brands": [
+    "Indian",
+    "Japan",
+    "Indonesian",
+    "TMPL",
+    "Bianco"
+  ],
+  "weHave": [
+    {
+      "type": 0,
+      "gsm": "80",
+      "sizeH": "24",
+      "sizeW": "36",
+      "brand": 1,
+      "price": "13800",
+      "id": "00080243601"
+    },
+    {
+      "type": 0,
+      "gsm": "100",
+      "sizeH": "24",
+      "sizeW": "36",
+      "brand": 0,
+      "price": "14800",
+      "id": "00100243600"
+    },
+    {
+      "type": 1,
+      "gsm": "80",
+      "sizeH": "24",
+      "sizeW": "36",
+      "brand": 3,
+      "price": "18000",
+      "id": "01080243603"
+    },
+    {
+      "type": 5,
+      "gsm": "220",
+      "sizeH": "20",
+      "sizeW": "30",
+      "brand": 0,
+      "price": "23200",
+      "id": "05220203000"
+    }
+  ]
+}

@@ -10,7 +10,7 @@
     <br />
     <br /><%- include("qtUps.ejs") %>
 
-    <div class="qtDiv">
+    <div class="qtDiv labelMargin">
       <label for="customer">Customer:</label>
       <input type="text" id="customer" name="customer" />
 
@@ -22,7 +22,7 @@
       <input type="date" id="resultsDT" name="resultsDT" value="2025-01-01" />
     </div>
 
-    <div class="qtDiv" id="chooseOp">
+    <div class="qtDiv labelMargin" id="chooseOp">
       <label for="incAw">Artwork</label>
       <input type="checkbox" name="incAw" id="incAw" />
       <label for="incPlates">Plates</label>
@@ -53,7 +53,6 @@
       <input type="checkbox" name="incDlv" checked="false" id="incDlv" />
     </div>
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script type="module" src="/qt.js" charset="utf-8"></script>
 
     <div id="div4op1"><%- include("qt1.ejs") %></div>

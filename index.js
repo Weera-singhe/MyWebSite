@@ -4,7 +4,8 @@ import fs from "fs";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const allPapersPath = __dirname + "/public/allpapers.json";
+const StockRecordsPath = __dirname + "/public/stockRecords.json";
+const paperDataPath = __dirname + "/public/paperData.json";
 
 const app = express();
 const port = 1999;
@@ -18,16 +19,27 @@ app.get("/", (req, res) => {
   res.render("index.ejs", {});
 });
 
+app.get("/papers", (req, res) => {
+  const paperDataJson = JSON.parse(fs.readFileSync(paperDataPath, "utf8"));
+  res.render("papers.ejs", { data: paperDataJson });
+});
 app.get("/stock", (req, res) => {
-  const allPapersJson = JSON.parse(fs.readFileSync(allPapersPath, "utf8"));
-  res.render("gts.ejs", { allPapers: allPapersJson });
+  const StockRecordsJson = JSON.parse(
+    fs.readFileSync(StockRecordsPath, "utf8")
+  );
+  res.render("stock.ejs", { stockRecs: StockRecordsJson });
 });
 
 app.get("/qt", (req, res) => {
-  const apj = JSON.parse(fs.readFileSync(allPapersPath, "utf8"));
+  const pj = JSON.parse(fs.readFileSync(paperDataPath, "utf8"));
+  const apj = pj.weHave;
   var slctPprHtml = "";
   for (let i = 0; i < apj.length; i++) {
-    slctPprHtml += `<option data-num='${apj[i].price}'>${apj[i].name} ${apj[i].gsm}gsm ${apj[i].brand} ${apj[i].sizeH}x${apj[i].sizeW}</option>`;
+    slctPprHtml += `<option data-num='${apj[i].price}'>${
+      pj.types[apj[i].type]
+    } ${apj[i].sizeH}x${apj[i].sizeW} ${apj[i].gsm}gsm ${
+      pj.brands[apj[i].brand]
+    }</option>`;
   }
   res.render("qt.ejs", { slctPprHtml });
 });
@@ -35,19 +47,44 @@ app.get("/qt", (req, res) => {
 app.post("/qt", (req, res) => {
   res.redirect("/qt");
 });
-app.post("/additemx", (req, res) => {
-  const { name, gsm, sizeH, sizeW, brand, stock, price } = req.body;
+app.post("/recStock", (req, res) => {
+  const { dtSTK, desSTK, chngSTK, dirSTK } = req.body;
 
-  fs.readFile(allPapersPath, "utf8", (err, json) => {
+  fs.readFile(StockRecordsPath, "utf8", (err, json) => {
+    if (err) {
+      console.error("Error reading file: " + err);
+      return;
+    }
+    console.log(dtSTK);
+
+    let items = JSON.parse(json);
+    items.push({ dtSTK, desSTK, chngSTK, dirSTK });
+    items.sort((a, b) => new Date(a.dtSTK) - new Date(b.dtSTK));
+
+    fs.writeFile(StockRecordsPath, JSON.stringify(items, null, 2), (err) => {
+      if (err) {
+        console.error("Error writing file: " + err);
+        return;
+      }
+      res.json({ success: true });
+    });
+  });
+});
+app.post("/additemx", (req, res) => {
+  let { type, gsm, sizeH, sizeW, brand, price, id } = req.body;
+  type = Number(type);
+  brand = Number(brand);
+
+  fs.readFile(paperDataPath, "utf8", (err, json) => {
     if (err) {
       console.error("Error reading file: " + err);
       return;
     }
 
     let items = JSON.parse(json);
-    items.push({ name, gsm, sizeH, sizeW, brand, stock, price });
+    items.weHave.push({ type, gsm, sizeH, sizeW, brand, price, id });
 
-    fs.writeFile(allPapersPath, JSON.stringify(items, null, 2), (err) => {
+    fs.writeFile(paperDataPath, JSON.stringify(items, null, 2), (err) => {
       if (err) {
         console.error("Error writing file: " + err);
         return;

@@ -60,6 +60,8 @@
 
 <script type="module">
   $(".opXM").on("change", calOpX);
+  var deci = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
+
   function calOpX() {
     var cutCost = Number($("#shCut").val()) * Number($("#perCut").val());
     if (cutCost < 2000) {
@@ -70,12 +72,12 @@
     }
     var pkCost = Number($("#pkts").val()) * Number($("#perPk").val());
 
-    $("#cosX1").html(Number($("#awCost").val()).toLocaleString());
-    $("#cosX2").html(cutCost.toLocaleString());
-    $("#cosX3").html(Number($("#gtCost").val()).toLocaleString());
-    $("#cosX4").html(Number($("#pdCost").val()).toLocaleString());
-    $("#cosX5").html(pkCost.toLocaleString());
-    $("#cosX6").html(Number($("#dlvCost").val()).toLocaleString());
+    $("#cosX1").html(Number($("#awCost").val()).toLocaleString("en-US", deci));
+    $("#cosX2").html(cutCost.toLocaleString("en-US", deci));
+    $("#cosX3").html(Number($("#gtCost").val()).toLocaleString("en-US", deci));
+    $("#cosX4").html(Number($("#pdCost").val()).toLocaleString("en-US", deci));
+    $("#cosX5").html(pkCost.toLocaleString("en-US", deci));
+    $("#cosX6").html(Number($("#dlvCost").val()).toLocaleString("en-US", deci));
   }
 
   calOpX();

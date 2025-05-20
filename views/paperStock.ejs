@@ -1,0 +1,127 @@
+<%- include("partials/header.ejs") %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="Stock" content="width=device-width, initial-scale=1.0" />
+    <title>Stock</title>
+  </head>
+  <body>
+    <div class="mrg15" style="clear: both">
+      <div class="opdiv" style="width: fit-content">
+        <select id="stk_of">
+          <%-slctPprHtml %>
+        </select>
+        <input type="datetime-local" id="dtSTK" />
+        <input
+          type="text"
+          style="width: 250px"
+          placeholder="Description..."
+          id="desSTK"
+        />
+
+        <input
+          type="number"
+          class="calCngSTK"
+          style="width: 50px"
+          id="rmSTK"
+          placeholder="RMs"
+          value="0"
+        />
+        <input
+          type="number"
+          class="calCngSTK"
+          style="width: 60px"
+          id="shSTK"
+          placeholder="sheets"
+          value="0"
+        />
+        <span id="chngSTK"></span>
+        <select id="dirSTK">
+          <option value="minus">Sell</option>
+          <option value="plus">Stock</option>
+        </select>
+        <button id="recStock">Enter</button>
+      </div>
+    </div>
+    <div id="stockRecContainer"></div>
+
+    <div style="clear: both; position: fixed; bottom: 0px; margin-left: 15px">
+      <div class="opdiv" style="width: 600px"></div>
+      <div class="opdiv" style="width: 200px"></div>
+      <div class="opdiv" style="width: 200px"></div>
+    </div>
+  </body>
+  <script id="stockDataJSON" type="application/json">
+    <%- JSON.stringify(stockRecs) %>
+  </script>
+  <script id="unitsJSON" type="application/json">
+    <%- JSON.stringify(units) %>
+  </script>
+
+  <script>
+    const $stkOf = $("#stk_of");
+    const $chngSTK = $("#chngSTK");
+
+    let chngSTK = 0;
+    let div_by = 1;
+
+    $("#recStock").on("click", recStock);
+    $(".calCngSTK").on("change", calculateChange);
+    $stkOf.on("change", updateStockView);
+
+    function calculateChange() {
+      const [rm, sh] = $(".calCngSTK")
+        .map((_, el) => parseFloat($(el).val()) || 0)
+        .get();
+      chngSTK = rm * div_by + sh;
+      $chngSTK.text(chngSTK.toLocaleString());
+    }
+
+    function recStock() {
+      const data = {
+        dtSTK: $("#dtSTK").val(),
+        desSTK: $("#desSTK").val().trim(),
+        chngSTK,
+        dirSTK: $("#dirSTK").val(),
+        slctPaperIdSTK: $stkOf.find("option:selected").data("id"),
+      };
+
+      $.post("/recStock", data, (res) => {
+        res.success ? location.reload() : alert("Error adding item.");
+      });
+    }
+
+    function updateStockView() {
+      const paperID = $stkOf.find("option:selected").data("id");
+      let ix = $stkOf.find("option:selected").data("un");
+      div_by = JSON.parse($("#unitsJSON").html())[ix].per || 1;
+      console.log(div_by);
+      const records = JSON.parse($("#stockDataJSON").html())[paperID] || [];
+
+      const html = records
+        .map((rec) => {
+          const date = rec.dtSTK?.split("T")[0] || "";
+          const desc = rec.desSTK || "";
+          const chng = Number(rec.chngSTK) || 0;
+          const dir = rec.dirSTK === "plus" ? "+" : "-";
+          const rm = Math.floor(chng / div_by),
+            sh = chng % div_by;
+
+          return `
+            <div class="mrg15" style="clear: both">
+              <div class="opdiv" style="width: 100px"><span class="midTxt">${date}</span></div>
+              <div class="opdiv" style="width: 300px"><span style="font-size: smaller">${desc}</span></div>
+              <div class="opdiv txtRight" style="width: 30px"><mrg5>${rm}</mrg5></div>
+              <div class="opdiv" style="width: 50px; margin-left: -1px"><mrg5>/</mrg5><mrg5>${sh}</mrg5></div>
+              <div class="opdiv txtRight" style="width: 100px"><mrg5>${dir}${chng.toLocaleString()}</mrg5></div>
+            </div>`;
+        })
+        .join("");
+
+      $("#stockRecContainer").html(html);
+    }
+
+    updateStockView();
+  </script>
+</html>

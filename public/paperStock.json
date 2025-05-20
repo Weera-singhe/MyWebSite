@@ -1,0 +1,33 @@
+{
+  "051230243604": [
+    {
+      "dtSTK": "2025-05-20T18:21",
+      "desSTK": "buy",
+      "chngSTK": "10480",
+      "dirSTK": "plus"
+    }
+  ],
+  "044055243603": [
+    {
+      "dtSTK": "2025-05-20T18:20",
+      "desSTK": "buy",
+      "chngSTK": "25400",
+      "dirSTK": "plus"
+    },
+    {
+      "dtSTK": "2025-05-20T18:21",
+      "desSTK": "nim",
+      "chngSTK": "1500",
+      "dirSTK": "minus"
+    },
+    {
+      "dtSTK": "2025-05-20T20:32",
+      "desSTK": "soldegersrege",
+      "chngSTK": "2550",
+      "dirSTK": "minus"
+    }
+  ],
+  "000080243608": [],
+  "000001010100": [],
+  "000080243408": []
+}

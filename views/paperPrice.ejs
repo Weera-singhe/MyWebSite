@@ -1,0 +1,90 @@
+<%- include("partials/header.ejs") %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="Stock" content="width=device-width, initial-scale=1.0" />
+    <title>Price</title>
+  </head>
+  <body>
+    <div class="mrg15" style="clear: both">
+      <div class="opdiv" style="width: fit-content">
+        <select id="price_of">
+          <option></option>
+          <%-slctPprHtml %>
+        </select>
+        <input type="datetime-local" id="dtPrice" />
+
+        <input
+          type="number"
+          style="width: 60px"
+          id="pricePrice"
+          placeholder="Price"
+        />
+        <button id="recPrice">Enter</button>
+        <mrg5 id="unitOfSelected"></mrg5>
+      </div>
+    </div>
+    <br /><br /><br />
+    <div class="mrg15" id="priceRecsContainer"></div>
+  </body>
+
+  <script id="unitsJSON" type="application/json">
+    <%- JSON.stringify(units) %>
+  </script>
+
+  <script id="paperPriceJSON" type="application/json">
+    <%- JSON.stringify(paperPriceJson) %>
+  </script>
+  <script>
+    $("#price_of").on("change", PaperChanged);
+    $("#recPrice").on("click", RecPrice);
+    let id_forPrice = "";
+    function PaperChanged() {
+      let ix = $("#price_of").find("option:selected").data("un");
+      let per = JSON.parse($("#unitsJSON").html())[ix]?.per || "";
+      let unitx = JSON.parse($("#unitsJSON").html())[ix]?.unit || "";
+
+      $("#unitOfSelected").html(per + " " + unitx);
+
+      id_forPrice = $("#price_of").find("option:selected").data("id") || "";
+      const records =
+        JSON.parse($("#paperPriceJSON").html())[id_forPrice] || [];
+
+      const html = records
+        .map((rec) => {
+          const date = rec.date?.split("T")[0] || "";
+          const price = Number(rec.price) || 0;
+          return `
+               <div class="mrg15" style="clear: both">
+        <div class="opdiv" style="width: 100px">
+          <span class="midTxt">${date}</span>
+        </div>
+        <div class="opdiv txtRight" style="width: 130px">
+          <mrg5>${price.toLocaleString()}</mrg5>
+        </div>
+      </div>`;
+        })
+        .join("");
+
+      $("#priceRecsContainer").html(html);
+      console.log(id_forPrice);
+    }
+    function RecPrice() {
+      if (id_forPrice === "") {
+        return;
+      }
+      console.log("go");
+      const data = {
+        date: $("#dtPrice").val(),
+        price: $("#pricePrice").val(),
+        slctPaperIdPrice: $("#price_of").find("option:selected").data("id"),
+      };
+
+      $.post("/recPrice", data, (res) => {
+        res.success ? location.reload() : alert("Error adding item.");
+      });
+    }
+    PaperChanged();
+  </script>
+</html>

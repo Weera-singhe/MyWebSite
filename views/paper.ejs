@@ -1,0 +1,93 @@
+<%- include("partials/header.ejs") %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="gts" content="width=device-width, initial-scale=1.0" />
+    <style>
+      input[type="number"] {
+        width: 70px;
+      }
+    </style>
+    <title>GTS</title>
+  </head>
+  <body>
+    <br /><br />
+    <% const renderOptions = (arr) => arr.map((v, i) => `
+    <option value="${i}">${v}</option>
+    `).join(''); %>
+
+    <select id="newType">
+      <%- renderOptions(data.types) %>
+    </select>
+    <select id="newColor">
+      <%- renderOptions(data.colors) %>
+    </select>
+    <input type="number" id="newGsm" placeholder="GSM" />
+    <input type="number" id="newSizeH" placeholder="Height" />
+    <input type="number" id="newSizeW" placeholder="Width" />
+    <select id="newBrand">
+      <%- renderOptions(data.brands) %>
+    </select>
+
+    <select id="newUnit">
+      <% data.units.forEach(unit => { %>
+      <option value="<%= unit.per %>" data-unitt="<%= unit.unit %>">
+        <%= `${unit.per} ${unit.unit}` %>
+      </option>
+      <% }); %>
+    </select>
+
+    <button id="addNewPaper">Add Paper</button>
+    <br />
+    <br />
+
+    <ul>
+      <% data.weHave.forEach(function(paper) { %>
+      <li>
+        <%=`${data.types[paper.type]} ${data.colors[paper.color]}
+        ${paper.gsm}gsm ${paper.sizeH}x${paper.sizeW}
+        ${data.brands[paper.brand]}`%>
+      </li>
+      <% }); %>
+    </ul>
+  </body>
+  <script type="module">
+    $("#addNewPaper").on("click", AddNewPaper);
+
+    function AddNewPaper() {
+      const type = $("#newType").val();
+      const color = $("#newColor").val();
+      const brand = $("#newBrand").val();
+      const gsm = $("#newGsm").val();
+      const sizeH = $("#newSizeH").val();
+      const sizeW = $("#newSizeW").val();
+      const units = $("#newUnit").prop("selectedIndex");
+      const id =
+        type.padStart(2, "0") +
+        color +
+        String(Math.round(gsm)).padStart(3, "0") +
+        String(Math.round(sizeH)).padStart(2, "0") +
+        String(Math.round(sizeW)).padStart(2, "0") +
+        brand.padStart(2, "0");
+
+      if ([gsm, sizeH, sizeW].includes("")) {
+        alert("Enter valid values.");
+        return;
+      }
+
+      $.post(
+        "/addNewPaper",
+        { type, color, brand, gsm, sizeH, sizeW, units, id },
+        function (data) {
+          if (data.success) {
+            console.log("Item added!");
+            location.reload();
+          } else {
+            alert("Error adding item.");
+          }
+        }
+      );
+    }
+  </script>
+</html>

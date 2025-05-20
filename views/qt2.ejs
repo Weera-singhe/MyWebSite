@@ -1,18 +1,26 @@
-<div class="qtDiv op2">
+<div class="mrg15 op2">
   <div class="opdiv opL" id="op2L">
-    <des>Paper <%= idx %></des>
+    <mrg5>Paper <%= idx %></mrg5>
   </div>
   <div class="opdiv opM" id= "<%= "op2M"+idx %>">
   <select class="slctPaper" name="slctPaper<%=idx %>" id="slctPaper<%=idx %>">
     <%- slctPprHtml %>
   </select>
-  <span name="slctPaperPrice<%=idx %>" id="slctPaperPrice<%=idx %>"></span>
-  <des>/</des>
+  <button id="aplySlctPprPrice<%=idx %>">+</button>
+  <input
+    class="withCommas"
+    type="text"
+    name="slctPaperPrice<%=idx %>"
+    id="slctPaperPrice<%=idx %>"
+    style="width: 45px"
+  />
+  <label for="slctPaperPrice<%=idx %>">LKR</label>
+  <mrg5>/</mrg5>
   <select name="slctRm<%=idx %>" id="slctRm<%=idx %>">
     <option>500</option>
     <option>100</option>
   </select>
-  <des>*</des>
+  <mrg5>*</mrg5>
   <input
     type="text"
     class="wid80 withCommas"
@@ -20,7 +28,7 @@
     id="pprcount<%=idx %>"
     min="0"
   />
-  <des>+</des>
+  <mrg5>+</mrg5>
   <input
     type="number"
     class="wid60"
@@ -30,22 +38,24 @@
   />
 </div>
 <div class="opdiv opR" id="op2R">
-  <des class="cos" id="cos2x<%=idx%>"></des>
+  <mrg5 class="cos" id="cos2x<%=idx%>"></mrg5>
 </div>
 </div>
 
 <script type="module">
   const idxx = "<%= idx %>";
   var deci = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
-
+  let priceOfSelectedPpr = 0;
   $("#op2M" + idxx).on("change", calOp2);
+  $("#slctPaper" + idxx).on("change", GetSlctPprPrice);
+  $("#aplySlctPprPrice" + idxx).on("click", ApplySlctPprPrice);
 
   function calOp2() {
-    var thePrice = Number(
-      $("#slctPaper" + idxx + " option:selected").data("num")
+    let thePrice = Number(
+      $("#slctPaperPrice" + idxx)
+        .val()
+        .replace(/,/g, "")
     );
-    $("#slctPaperPrice" + idxx).html(thePrice.toLocaleString() + " lkr");
-
     let pprCount = Number(
       $("#pprcount" + idxx)
         .val()
@@ -55,6 +65,20 @@
     var reem = Number($("#slctRm" + idxx).val());
     var outcome = (thePrice / reem) * (pprCount + extraPpr);
     $("#cos2x" + idxx).html(outcome.toLocaleString("en-US", deci));
+
+    if (thePrice === priceOfSelectedPpr) {
+      $("#slctPaperPrice" + idxx).css("color", "black");
+    } else {
+      $("#slctPaperPrice" + idxx).css("color", "firebrick");
+    }
   }
+  function GetSlctPprPrice() {
+    priceOfSelectedPpr = $("#slctPaper" + idxx + " option:selected").data("p");
+  }
+  function ApplySlctPprPrice() {
+    $("#slctPaperPrice" + idxx).val(priceOfSelectedPpr.toLocaleString());
+    calOp2();
+  }
+  GetSlctPprPrice();
   calOp2();
 </script>

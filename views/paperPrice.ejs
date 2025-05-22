@@ -71,15 +71,16 @@
       console.log(id_forPrice);
     }
     function RecPrice() {
-      if (id_forPrice === "") {
-        return;
-      }
-      console.log("go");
       const data = {
         date: $("#dtPrice").val(),
         price: $("#pricePrice").val(),
         slctPaperIdPrice: $("#price_of").find("option:selected").data("id"),
       };
+
+      if ([data.date, id_forPrice].includes("") || data.price <= 0) {
+        alert("Enter All details.");
+        return;
+      }
 
       $.post("/recPrice", data, (res) => {
         res.success ? location.reload() : alert("Error adding item.");

@@ -47,14 +47,14 @@ app.get("/qt", (req, res) => {
 app.post("/qt", (req, res) => res.redirect("/qt"));
 
 app.post("/recStock", (req, res) => {
-  const { dtSTK, desSTK, chngSTK, dirSTK, slctPaperIdSTK } = req.body;
+  const { dt, des, diff, slctPaperId } = req.body;
 
   try {
     const json = fs.readFileSync(paperStockPath, "utf8");
     const items = JSON.parse(json);
 
-    items[slctPaperIdSTK].push({ dtSTK, desSTK, chngSTK, dirSTK });
-    items[slctPaperIdSTK].sort((a, b) => new Date(a.dtSTK) - new Date(b.dtSTK));
+    items[slctPaperId].push({ dt, des, diff: +diff });
+    items[slctPaperId].sort((a, b) => new Date(a.dt) - new Date(b.dt));
 
     fs.writeFileSync(paperStockPath, JSON.stringify(items, null, 2));
     res.json({ success: true });
@@ -115,15 +115,16 @@ app.post("/addNewPaper", (req, res) => {
 });
 
 function GenAllPprHtml() {
+  const pr = JSON.parse(fs.readFileSync(paperPricePath, "utf8"));
   const pj = JSON.parse(fs.readFileSync(paperDataPath, "utf8"));
   return pj.weHave
     .map(
       (p) =>
-        `<option data-p='99999' data-id='${p.id}' data-un='${p.units}'>${
-          pj.types[p.type]
-        } ${pj.colors[p.color]} ${p.sizeH}x${p.sizeW} ${p.gsm}gsm ${
-          pj.brands[p.brand]
-        }</option>`
+        `<option data-pr='${pr[p.id][0]?.price}'data-id='${p.id}' data-un='${
+          p.units
+        }'>${pj.types[p.type]} ${pj.colors[p.color]} ${p.sizeH}x${p.sizeW} ${
+          p.gsm
+        }gsm ${pj.brands[p.brand]}</option>`
     )
     .join("");
 }
@@ -133,55 +134,3 @@ function GetPprUnits() {
 }
 
 app.listen(port, () => console.log("listening.."));
-
-////////////////////////////////////////////////
-/*
-app.post("/addNewPaper", (req, res) => {
-  let { type, color, gsm, sizeH, sizeW, brand, units, id } = req.body;
-  type = Number(type);
-  color = Number(color);
-  brand = Number(brand);
-
-  fs.readFile(paperDataPath, "utf8", (err, paperJson) => {
-    if (err) {
-      console.error("Error reading paper data: " + err);
-      return res.status(500).json({ success: false });
-    }
-
-    let papers = JSON.parse(paperJson);
-    papers.weHave.push({ type, color, gsm, sizeH, sizeW, brand, units, id });
-    papers.weHave.sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
-
-    fs.writeFile(paperDataPath, JSON.stringify(papers, null, 2), (err) => {
-      if (err) {
-        console.error("Error writing paper data: " + err);
-        return res.status(500).json({ success: false });
-      }
-
-      fs.readFile(paperStockPath, "utf8", (err, stockJson) => {
-        if (err) {
-          console.error("Error reading stock records: " + err);
-          return res.status(500).json({ success: false });
-        }
-
-        let stockItems = JSON.parse(stockJson);
-        if (!stockItems[id]) {
-          stockItems[id] = [];
-        }
-
-        fs.writeFile(
-          paperStockPath,
-          JSON.stringify(stockItems, null, 2),
-          (err) => {
-            if (err) {
-              console.error("Error writing stock records: " + err);
-              return res.status(500).json({ success: false });
-            }
-            res.json({ success: true });
-          }
-        );
-      });
-    });
-  });
-});
-*/

@@ -6,7 +6,7 @@
   <select class="slctPaper" name="slctPaper<%=idx %>" id="slctPaper<%=idx %>">
     <%- slctPprHtml %>
   </select>
-  <button id="aplySlctPprPrice<%=idx %>">+</button>
+  <button id="aplySlctPprPrice<%=idx %>">></button>
   <input
     class="withCommas"
     type="text"
@@ -73,7 +73,7 @@
     }
   }
   function GetSlctPprPrice() {
-    priceOfSelectedPpr = $("#slctPaper" + idxx + " option:selected").data("p");
+    priceOfSelectedPpr = $("#slctPaper" + idxx + " option:selected").data("pr");
   }
   function ApplySlctPprPrice() {
     $("#slctPaperPrice" + idxx).val(priceOfSelectedPpr.toLocaleString());

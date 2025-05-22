@@ -38,8 +38,8 @@
         />
         <span id="chngSTK"></span>
         <select id="dirSTK">
-          <option value="minus">Sell</option>
-          <option value="plus">Stock</option>
+          <option value="-1">Sell</option>
+          <option value="1">Stock</option>
         </select>
         <button id="recStock">Enter</button>
       </div>
@@ -63,7 +63,7 @@
     const $stkOf = $("#stk_of");
     const $chngSTK = $("#chngSTK");
 
-    let chngSTK = 0;
+    let chng = 0;
     let div_by = 1;
 
     $("#recStock").on("click", recStock);
@@ -74,18 +74,21 @@
       const [rm, sh] = $(".calCngSTK")
         .map((_, el) => parseFloat($(el).val()) || 0)
         .get();
-      chngSTK = rm * div_by + sh;
-      $chngSTK.text(chngSTK.toLocaleString());
+      chng = rm * div_by + sh;
+      $chngSTK.text(chng.toLocaleString());
     }
 
     function recStock() {
       const data = {
-        dtSTK: $("#dtSTK").val(),
-        desSTK: $("#desSTK").val().trim(),
-        chngSTK,
-        dirSTK: $("#dirSTK").val(),
-        slctPaperIdSTK: $stkOf.find("option:selected").data("id"),
+        dt: $("#dtSTK").val(),
+        des: $("#desSTK").val().trim(),
+        diff: $("#dirSTK").val() * chng,
+        slctPaperId: $stkOf.find("option:selected").data("id"),
       };
+      if ([data.dt, data.des].includes("")) {
+        alert("Enter All details.");
+        return;
+      }
 
       $.post("/recStock", data, (res) => {
         res.success ? location.reload() : alert("Error adding item.");
@@ -96,26 +99,35 @@
       const paperID = $stkOf.find("option:selected").data("id");
       let ix = $stkOf.find("option:selected").data("un");
       div_by = JSON.parse($("#unitsJSON").html())[ix].per || 1;
-      console.log(div_by);
       const records = JSON.parse($("#stockDataJSON").html())[paperID] || [];
+      let diffSum = 0;
 
       const html = records
         .map((rec) => {
-          const date = rec.dtSTK?.split("T")[0] || "";
-          const desc = rec.desSTK || "";
-          const chng = Number(rec.chngSTK) || 0;
-          const dir = rec.dirSTK === "plus" ? "+" : "-";
-          const rm = Math.floor(chng / div_by),
-            sh = chng % div_by;
-
+          const date = rec.dt?.split("T")[0] || "";
+          const desc = rec.des || "";
+          const diff = rec.diff || 0;
+          const dir = diff < 0 ? "-" : "+";
+          diffSum = diffSum + diff;
+          const rm = Math.trunc(diff / div_by),
+            sh = diff % div_by;
+          const rmCal = Math.trunc(diffSum / div_by),
+            shCal = diffSum % div_by;
           return `
             <div class="mrg15" style="clear: both">
               <div class="opdiv" style="width: 100px"><span class="midTxt">${date}</span></div>
               <div class="opdiv" style="width: 300px"><span style="font-size: smaller">${desc}</span></div>
-              <div class="opdiv txtRight" style="width: 30px"><mrg5>${rm}</mrg5></div>
-              <div class="opdiv" style="width: 50px; margin-left: -1px"><mrg5>/</mrg5><mrg5>${sh}</mrg5></div>
-              <div class="opdiv txtRight" style="width: 100px"><mrg5>${dir}${chng.toLocaleString()}</mrg5></div>
-            </div>`;
+              <div class="opdiv txtRight" style="width: 40px">
+              <mrg5>${dir}</mrg5><span>${Math.abs(rm)}</span></div>
+              <div class="opdiv" style="width: 40px; margin-left: -3px">
+              <span>/</span><mrg5>${Math.abs(sh)}</mrg5></div>
+              <div class="opdiv txtRight" style="width: 70px">
+              <mrg5>${dir}${Math.abs(diff).toLocaleString()}</mrg5></div>
+               <div class="opdiv txtRight"style="width: 80px; border: 1px solid black; box-sizing: border-box"><mrg5>${rmCal}/${Math.abs(
+            shCal
+          )}</mrg5></div>  
+               <div class="opdiv txtRight"style="width: 80px; border: 1px solid black; box-sizing: border-box; margin-left: -3px"><mrg5>${diffSum.toLocaleString()}</mrg5></div>  
+           </div>`;
         })
         .join("");
 

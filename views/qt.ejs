@@ -8,64 +8,20 @@
   </head>
   <body>
     <br />
-    <br /><%- include("qtUps.ejs") %>
+    <br /><%- include("qtparts/qtUps.ejs") %>
 
-    <div class="mrg15 labelMargin">
-      <label for="customer">Customer:</label>
-      <input type="text" id="customer" name="customer" />
-
-      <label for="endDT">End Date:</label>
-      <input type="date" id="endDT" name="endDT" value="2025-01-01" />
-      <label for="submitDT">Submit Date:</label>
-      <input type="date" id="submitDT" name="submitDT" value="2025-01-01" />
-      <label for="resultsDT">Results Date:</label>
-      <input type="date" id="resultsDT" name="resultsDT" value="2025-01-01" />
-    </div>
-
-    <div class="mrg15 labelMargin" id="chooseOp">
-      <label for="incAw">Artwork</label>
-      <input type="checkbox" name="incAw" id="incAw" />
-      <label for="incPlates">Plates</label>
-      <input type="checkbox" name="incPlates" checked="true" id="incPlates" />
-      <label for="incPaper">Papers</label>
-      <input type="checkbox" name="incPaper" checked="true" id="incPaper" />
-      <input
-        type="number"
-        value="1"
-        id="op2count"
-        name="op2count"
-        class="wid40"
-      />
-
-      <label for="incPrint">Printing:</label>
-      <input type="checkbox" name="incPrint" checked="true" id="incPrint" />
-
-      <label for="incCut">Cutting:</label>
-      <input type="checkbox" name="incCut" checked="true" id="incCut" />
-
-      <label for="incGt">Gathering</label>
-      <input type="checkbox" name="incGt" id="incGt" />
-      <label for="incPd">Padding</label>
-      <input type="checkbox" name="incPd" id="incPd" />
-      <label for="incPk">Packing</label>
-      <input type="checkbox" name="incPk" checked="false" id="incPk" />
-      <label for="incDlv">Delivery</label>
-      <input type="checkbox" name="incDlv" checked="false" id="incDlv" />
-    </div>
-
-    <script type="module" src="/qt.js" charset="utf-8"></script>
-
-    <div id="div4op1"><%- include("qt1.ejs") %></div>
+    <div id="div4op0"><%- include("qtparts/qt0.ejs") %></div>
+    <div id="div4op1"><%- include("qtparts/qt1.ejs") %></div>
     <div id="div4op2">
       <% for( let i = 1; i <11; i++ ) { %>
       <div id="div4op2x<%= i %>">
-        <%- include("qt2.ejs",{idx:i,slctPprHtml}) %>
+        <%- include("qtparts/qt2.ejs",{idx:i,slctPprHtml}) %>
       </div>
       <% } %>
     </div>
-    <div id="div4op3"><%- include("qt3.ejs") %></div>
+    <div id="div4op3"><%- include("qtparts/qt3.ejs") %></div>
 
-    <div id="div4opX"><%- include("qtX.ejs") %></div>
-    <div id="div4opxTot"><%- include("qtxTot.ejs") %></div>
+    <div id="div4opX"><%- include("qtparts/qtX.ejs") %></div>
+    <div id="div4opxTot"><%- include("qtparts/qtxTot.ejs") %></div>
   </body>
 </html>

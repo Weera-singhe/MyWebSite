@@ -1,21 +1,6 @@
 {
-  "types": [
-    "Bank",
-    "Art",
-    "NCR CB",
-    "NCR CFB",
-    "NCR CF",
-    "Art Board"
-  ],
-  "colors": [
-    " ",
-    "MT",
-    "GL",
-    "Y",
-    "G",
-    "P",
-    "B"
-  ],
+  "types": ["Bank", "Art", "Art Board", "NCR CB", "NCR CFB", "NCR CF"],
+  "colors": [" ", "MT", "GL", "Y", "G", "P", "B"],
   "brands": [
     "null",
     "Bianco",
@@ -31,69 +16,5 @@
     "PaperOne",
     "Shah",
     "TMPL"
-  ],
-  "units": [
-    {
-      "per": 500,
-      "unit": "sheets"
-    },
-    {
-      "per": 100,
-      "unit": "sheets"
-    },
-    {
-      "per": 1,
-      "unit": "sheet"
-    },
-    {
-      "per": 125,
-      "unit": "sheets"
-    },
-    {
-      "per": 1,
-      "unit": "kg"
-    }
-  ],
-  "weHave": [
-    {
-      "type": 0,
-      "color": 0,
-      "gsm": "80",
-      "sizeH": "24",
-      "sizeW": "34",
-      "brand": 8,
-      "units": "0",
-      "id": "000080243408"
-    },
-    {
-      "type": 0,
-      "color": 0,
-      "gsm": "80",
-      "sizeH": "24",
-      "sizeW": "36",
-      "brand": 8,
-      "units": "0",
-      "id": "000080243608"
-    },
-    {
-      "type": 4,
-      "color": 4,
-      "gsm": "55",
-      "sizeH": "24",
-      "sizeW": "36",
-      "brand": 3,
-      "units": "0",
-      "id": "044055243603"
-    },
-    {
-      "type": 5,
-      "color": 1,
-      "gsm": "230",
-      "sizeH": "24",
-      "sizeW": "36",
-      "brand": 4,
-      "units": "1",
-      "id": "051230243604"
-    }
   ]
 }

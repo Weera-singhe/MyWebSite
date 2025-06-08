@@ -1,0 +1,73 @@
+<%- include("partials/header.ejs") %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="Stock" content="width=device-width, initial-scale=1.0" />
+    <title>Price</title>
+  </head>
+  <body>
+    <div class="mrg15" style="clear: both">
+      <div class="opdiv" style="width: fit-content">
+        <select id="price_of">
+          <% ids.forEach((id,i) => { %>
+          <option <%= i === def ? "selected" : "" %> value="<%= id %>" ><%= names[i] %></option>
+          <% }); %>
+        </select>
+        <input type="datetime-local" id="new_price_date" />
+
+        <input
+          type="number"
+          style="width: 60px"
+          id="new_price"
+          placeholder="Price"
+        />
+        <button id="rec_price">Enter</button>
+        <mrg5 id="unit_of_selected"></mrg5>
+      </div>
+    </div>
+    
+    <br /><br /><br />
+    <div class="mrg15" id="price_recs_container">
+      <% recs.forEach((r,i) => { %>
+      <div class="mrg15" style="clear: both">
+        <div class="opdiv" style="width: 100px">
+          <span class="midTxt"><%= r.date%></span>
+        </div>
+        <div class="opdiv txtRight" style="width: 130px">
+          <mrg5><%=r.price.toLocaleString() %></mrg5>
+        </div>
+      </div>
+      <% }); %>
+    </div>
+  </body>
+
+  <script>
+    $("#rec_price").on("click", RecPrice);
+    $("#price_of").on("change", DefChanged);
+
+    function RecPrice() {
+      const data = {
+        id: $("#price_of").val(),
+        date: $("#new_price_date").val(),
+        price: parseFloat($("#new_price").val()).toFixed(2),
+      };
+
+      if ([data.date, data.price].includes("") || data.price < 1) {
+        alert("Enter Correct details.");
+        return;
+      }
+
+      $.post("/rec_price", data)
+        .done(() => location.reload())
+        .fail(() => alert("Error saving data"));
+    }
+
+    function DefChanged() {
+      const i = $("#price_of option:selected").index();
+      $.post("/def_on_price_x", { data: i }, () => {
+        location.href = "/price";
+      });
+    }
+  </script>
+</html>

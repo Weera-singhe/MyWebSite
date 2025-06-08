@@ -1,0 +1,121 @@
+<%- include("partials/header.ejs") %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="gts" content="width=device-width, initial-scale=1.0" />
+    <style>
+      input[type="number"] {
+        width: 70px;
+      }
+    </style>
+    <title>GTS</title>
+  </head>
+  <body>
+    <br /><br />
+    <select id="new_type">
+      <% data.types.forEach((i,ii) => { %>
+      <option value="<%= ii %>"><%= i %></option>
+      <% }) %>
+    </select>
+    <select id="new_color">
+      <% data.colors.forEach(( i) => { %>
+      <option><%= i %></option>
+      <% }) %>
+    </select>
+    <input type="number" id="new_gsm" placeholder="GSM" />
+    <input type="number" id="new_sizeH" placeholder="Height" />
+    <input type="number" id="new_sizeW" placeholder="Width" />
+    <select id="new_brand">
+      <% data.brands.forEach(( i) => { %>
+      <option><%= i %></option>
+      <% }) %>
+    </select>
+
+    <select id="new_unitVal">
+      <option value="500">500</option>
+      <option value="250">250</option>
+      <option value="125">125</option>
+      <option value="100">100</option>
+      <option value="1">1</option>
+    </select>
+    <select id="new_unit">
+      <% data.units.forEach(( i) => { %>
+      <option><%= i %></option>
+      <% }) %>
+    </select>
+
+    <button id="add_new_paper">Add Paper</button>
+    <br />
+    <br />
+
+    <ul>
+      <% names.forEach(( i) => { %>
+      <li><%= i %></li>
+      <% }) %>
+    </ul>
+  </body>
+  <script type="module">
+    $("#add_new_paper").on("click", AddNewPaper);
+
+    function AddNewPaper() {
+      const v = (sel) => Number($(sel + " option:selected").index()) + 1;
+      let type = v("#new_type");
+      let color = v("#new_color");
+      let brand = v("#new_brand");
+      let unit = v("#new_unit");
+
+      let gsm = Math.round($("#new_gsm").val() * 10) / 10;
+      let sizeH = Math.round($("#new_sizeH").val() * 10) / 10;
+      let sizeW = Math.round($("#new_sizeW").val() * 10) / 10;
+
+      let id =
+        String(type).padStart(3, "0") +
+        String(color).padStart(2, "0") +
+        String(gsm * 10).padStart(4, "0") +
+        String(sizeH * 10).padStart(3, "0") +
+        String(sizeW * 10).padStart(3, "0") +
+        String(brand).padStart(3, "0");
+
+      if (
+        gsm < 1 ||
+        sizeH < 1 ||
+        sizeW < 1 ||
+        gsm > 999.9 ||
+        sizeH > 99.9 ||
+        sizeW > 99.9
+      ) {
+        alert("Enter valid values.");
+        return;
+      }
+      const data = {
+        type,
+        color,
+        brand,
+        gsm,
+        sizeH,
+        sizeW,
+        id,
+        unitVal: $("#new_unitVal").val(),
+        unit,
+      };
+
+      $.ajax({
+        type: "POST",
+        url: "/add_new_paper",
+        data,
+        success: function (res) {
+          if (res.success) {
+            location.reload();
+          } else {
+            alert(res.message || "Unknown error");
+          }
+        },
+        error: function (xhr) {
+          const msg = xhr.responseJSON?.message || "Unexpected server error.";
+          alert(msg);
+        },
+      });
+    }
+  </script>
+</html>

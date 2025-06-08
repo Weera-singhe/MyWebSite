@@ -1,7 +1,9 @@
 import express from "express";
 import fs from "fs";
+import pg from "pg";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import { debug } from "console";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -15,26 +17,111 @@ app.use(express.json());
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
 
+const db = new pg.Client({
+  user: "postgres",
+  host: "localhost",
+  database: "my",
+  password: " ",
+  port: 1234,
+});
+db.connect();
+
+let def_on_price = 0;
+let def_on_stock = 0;
+
+function GetIdsNames() {
+  return db
+    .query(
+      `SELECT p.id, p.gsm,t.type, p.size_h, p.size_w, b.brand, c.color
+      FROM papers p JOIN types  t ON p.type_  = t.type_id
+      JOIN brands b ON p.brand_ = b.brand_id JOIN colors c ON p.color_ = c.color_id`
+    )
+    .then((result) => {
+      const ids = result.rows.map((i) => i.id);
+      const names = result.rows.map(
+        (i) =>
+          `${i.type} ${i.gsm}gsm ${i.size_h}x${i.size_w} ${i.brand} ${i.color}`
+      );
+      return { ids, names };
+    });
+}
+
 app.get("/", (req, res) => res.render("index.ejs"));
 
-app.get("/papers", (req, res) => {
-  const data = JSON.parse(fs.readFileSync(paperDataPath, "utf8"));
-  res.render("paper.ejs", { data });
+app.get("/papers", async (req, res) => {
+  const result = await db.query(`SELECT json_build_object(
+    'types',  (SELECT array_agg(type)  FROM types),
+    'colors', (SELECT array_agg(color) FROM colors),
+   'brands', (SELECT array_agg(brand) FROM brands),
+   'units', (SELECT array_agg(unit) FROM units)) AS result;`);
+  const data = result.rows[0].result;
+  const { ids, names } = await GetIdsNames();
+  res.render("papers.ejs", { data, names });
 });
 
+app.post("/add_new_paper", async (req, res) => {
+  try {
+    let { type, color, brand, gsm, sizeH, sizeW, id, unitVal, unit } = req.body;
+    await db.query("INSERT INTO papers VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)", [
+      id,
+      +type,
+      +color,
+      +gsm,
+      +sizeH,
+      +sizeW,
+      +brand,
+      +unitVal,
+      +unit,
+    ]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error("DB Error:", err.message);
+    if (err.code === "23505") {
+      res.json({ success: false, message: "This paper already exists." });
+    } else {
+      res.status(500).json({ success: false, message: err.message });
+    }
+  }
+});
+
+app.get("/price", async (req, res) => {
+  const { ids, names } = await GetIdsNames();
+  const result = await db.query(
+    `SELECT TO_CHAR(date, 'YYYY-MM-DD') AS date,price
+    FROM paper_price JOIN papers ON papers.id = paper_price.price_id
+    where price_id = $1 ORDER BY date ASC; `,
+    [ids[def_on_price]]
+  );
+  res.render("paper_price.ejs", {
+    ids,
+    names,
+    recs: result.rows,
+    def: def_on_price,
+  });
+});
+
+app.post("/def_on_price_x", (req, res) => {
+  def_on_price = Number(req.body.data);
+  res.sendStatus(200);
+});
+
+app.post("/rec_price", async (req, res) => {
+  const { id, date, price } = req.body;
+  try {
+    await db.query(
+      "INSERT INTO paper_price (price_id, date, price)VALUES ($1,$2,$3)",
+      [id, date, +price]
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Error inserting price:", err.message);
+    res.sendStatus(500);
+  }
+});
 app.get("/stock", (req, res) => {
   const stockRecs = JSON.parse(fs.readFileSync(paperStockPath, "utf8"));
   res.render("paperStock.ejs", {
     stockRecs,
-    slctPprHtml: GenAllPprHtml(),
-    units: GetPprUnits(),
-  });
-});
-
-app.get("/price", (req, res) => {
-  const paperPriceJson = JSON.parse(fs.readFileSync(paperPricePath, "utf8"));
-  res.render("paperPrice.ejs", {
-    paperPriceJson,
     slctPprHtml: GenAllPprHtml(),
     units: GetPprUnits(),
   });
@@ -60,56 +147,6 @@ app.post("/recStock", (req, res) => {
     res.json({ success: true });
   } catch (err) {
     console.error("Stock error:", err);
-    res.status(500).json({ success: false });
-  }
-});
-app.post("/recPrice", (req, res) => {
-  const { date, price, slctPaperIdPrice } = req.body;
-
-  try {
-    const json = fs.readFileSync(paperPricePath, "utf8");
-    const items = JSON.parse(json);
-
-    items[slctPaperIdPrice].push({ date, price });
-    items[slctPaperIdPrice].sort((b, a) => new Date(a.date) - new Date(b.date));
-
-    fs.writeFileSync(paperPricePath, JSON.stringify(items, null, 2));
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Stock error:", err);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.post("/addNewPaper", (req, res) => {
-  let { type, color, gsm, sizeH, sizeW, brand, units, id } = req.body;
-
-  try {
-    const paperData = JSON.parse(fs.readFileSync(paperDataPath, "utf8"));
-    paperData.weHave.push({
-      type: +type,
-      color: +color,
-      gsm,
-      sizeH,
-      sizeW,
-      brand: +brand,
-      units,
-      id,
-    });
-    paperData.weHave.sort((a, b) => a.id.localeCompare(b.id));
-    fs.writeFileSync(paperDataPath, JSON.stringify(paperData, null, 2));
-
-    const stockData = JSON.parse(fs.readFileSync(paperStockPath, "utf8"));
-    if (!stockData[id]) stockData[id] = [];
-    fs.writeFileSync(paperStockPath, JSON.stringify(stockData, null, 2));
-
-    const priceData = JSON.parse(fs.readFileSync(paperPricePath, "utf8"));
-    if (!priceData[id]) priceData[id] = [];
-    fs.writeFileSync(paperPricePath, JSON.stringify(priceData, null, 2));
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Add paper error:", err);
     res.status(500).json({ success: false });
   }
 });

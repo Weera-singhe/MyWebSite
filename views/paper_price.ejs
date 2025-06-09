@@ -27,7 +27,7 @@
       </div>
     </div>
     
-    <br /><br /><br />
+    <br /><br />
     <div class="mrg15" id="price_recs_container">
       <% recs.forEach((r,i) => { %>
       <div class="mrg15" style="clear: both">
@@ -43,10 +43,10 @@
   </body>
 
   <script>
-    $("#rec_price").on("click", RecPrice);
+    $("#rec_price").on("click", Rec);
     $("#price_of").on("change", DefChanged);
 
-    function RecPrice() {
+    function Rec() {
       const data = {
         id: $("#price_of").val(),
         date: $("#new_price_date").val(),

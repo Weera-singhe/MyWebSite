@@ -109,3 +109,6 @@ input[type="checkbox"] {
   float: left;
   border-radius: 3px;
 }
+.low_stock {
+  color: firebrick;
+}

@@ -21,7 +21,7 @@ const db = new pg.Client({
   user: "postgres",
   host: "localhost",
   database: "my",
-  password: " ",
+  password: "",
   port: 1234,
 });
 db.connect();
@@ -34,7 +34,8 @@ function GetIdsNames() {
     .query(
       `SELECT p.id, p.gsm,t.type, p.size_h, p.size_w, b.brand, c.color
       FROM papers p JOIN types  t ON p.type_  = t.type_id
-      JOIN brands b ON p.brand_ = b.brand_id JOIN colors c ON p.color_ = c.color_id`
+      JOIN brands b ON p.brand_ = b.brand_id JOIN colors c ON p.color_ = c.color_id
+      ORDER BY p.id ASC`
     )
     .then((result) => {
       const ids = result.rows.map((i) => i.id);
@@ -43,6 +44,18 @@ function GetIdsNames() {
           `${i.type} ${i.gsm}gsm ${i.size_h}x${i.size_w} ${i.brand} ${i.color}`
       );
       return { ids, names };
+    });
+}
+function GetUnits() {
+  return db
+    .query(
+      `SELECT p.unit_val, u.unit FROM papers p 
+      JOIN units  u ON p.unit_  = u.unit_id ORDER BY p.id ASC`
+    )
+    .then((result) => {
+      const unit_vals = result.rows.map((i) => i.unit_val);
+      const units = result.rows.map((i) => i.unit);
+      return { unit_vals, units };
     });
 }
 
@@ -118,13 +131,42 @@ app.post("/rec_price", async (req, res) => {
     res.sendStatus(500);
   }
 });
-app.get("/stock", (req, res) => {
-  const stockRecs = JSON.parse(fs.readFileSync(paperStockPath, "utf8"));
-  res.render("paperStock.ejs", {
-    stockRecs,
-    slctPprHtml: GenAllPprHtml(),
-    units: GetPprUnits(),
+
+app.get("/stock", async (req, res) => {
+  const { ids, names } = await GetIdsNames();
+  const { unit_vals, units } = await GetUnits();
+  const result = await db.query(
+    `SELECT TO_CHAR(paper_stock.date, 'YYYY-MM-DD') AS date,des,change
+    FROM paper_stock JOIN papers ON papers.id = paper_stock.stock_id
+    where stock_id = $1 ORDER BY paper_stock.date ASC; `,
+    [ids[def_on_stock]]
+  );
+  res.render("paper_stock.ejs", {
+    ids,
+    names,
+    recs: result.rows,
+    def: def_on_stock,
+    def_unit_val: unit_vals[def_on_stock],
+    def_unit: units[def_on_stock],
   });
+});
+app.post("/def_on_stk_x", (req, res) => {
+  def_on_stock = Number(req.body.data);
+  res.sendStatus(200);
+});
+
+app.post("/rec_stock", async (req, res) => {
+  const { id, date, des, change } = req.body;
+  try {
+    await db.query(
+      "INSERT INTO paper_stock (stock_id, date,des, change)VALUES ($1,$2,$3,$4)",
+      [id, date, des, Number(change)]
+    );
+    res.sendStatus(200);
+  } catch (err) {
+    console.error("Error inserting price:", err.message);
+    res.sendStatus(500);
+  }
 });
 
 app.get("/qt", (req, res) => {

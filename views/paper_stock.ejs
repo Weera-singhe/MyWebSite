@@ -1,0 +1,154 @@
+<%- include("partials/header.ejs") %>
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="Stock" content="width=device-width, initial-scale=1.0" />
+    <title>Stock</title>
+  </head>
+  <body>
+    <div class="mrg15" style="clear: both">
+      <div class="opdiv" style="width: fit-content">
+        <select id="stk_of">
+          <% ids.forEach((id,i) => { %>
+          <option <%= i === def ? "selected" : "" %> value="<%= id %>" ><%= names[i] %></option>
+          <% }); %>
+        </select>
+        <input type="datetime-local" id="new_stk_date" />
+        <input
+          type="text"
+          style="width: 250px"
+          placeholder="Description..."
+          id="des_stk"
+        />
+
+        <div class="mrg15" style="display: inline"></div>
+        <input
+          type="number"
+          class="cal_new_change"
+          style="width: 55px"
+          id="rm_new_stk"
+          placeholder=" units"
+        />
+        <input
+          type="number"
+          class="cal_new_change"
+          style="width: 65px"
+          id="sh_new_stk"
+          placeholder=" sheets"
+        />
+        <span id="display_stk_change"></span>
+        <div class="mrg15" style="display: inline"></div>
+
+        <select class="cal_new_change" id="dir_stk">
+          <option value="-1">Sell</option>
+          <option value="1">Stock</option>
+        </select>
+        <button id="rec_stock">Enter</button>
+      </div>
+    </div>
+    <br />
+    <br />
+    <div id="stk_recs_container">
+      <% let stk_before = 0; %> <% recs.forEach(r => { const change_abs =
+      Math.abs(r.change); const sign = r.change > 0 ? "+" : "-"; const rm =
+      Math.trunc(change_abs / def_unit_val); const sh = change_abs %
+      def_unit_val; const stk_now= stk_before + r.change; const stk_sign =
+      stk_now >= 0 ? "" : "-"; const stk_abs= Math.abs(stk_now); const stk_rm =
+      Math.trunc(stk_abs / def_unit_val); const stk_sh = stk_abs % def_unit_val;
+      %>
+
+      <div class="mrg15" style="clear: both">
+        <div class="opdiv" style="width: 100px">
+          <span class="midTxt"><%= r.date %></span>
+        </div>
+        <div class="opdiv" style="width: 300px">
+          <span style="font-size: smaller"><%= r.des %></span>
+        </div>
+        <div class="opdiv txtRight" style="width: 40px">
+          <mrg5><%= sign %></mrg5><span><%= rm %></span>
+        </div>
+        <div class="opdiv" style="width: 40px; margin-left: -3px">
+          <span>/</span><mrg5><%= sh %></mrg5>
+        </div>
+        <div class="opdiv txtRight" style="width: 70px">
+          <mrg5><%= sign +" "+ change_abs.toLocaleString() %></mrg5>
+        </div>
+        <div
+          class="opdiv txtRight <%= stk_now > 0 ? '' : 'low_stock' %>"
+          style="width: 100px; border: 1px solid black; box-sizing: border-box"
+        >
+          <mrg5><%=stk_sign%> <%=stk_rm%> / <%=stk_sh%></mrg5>
+        </div>
+        <div
+          class="opdiv txtRight <%= stk_now > 0 ? '' : 'low_stock' %>"
+          style="
+            width: 80px;
+            border: 1px solid black;
+            box-sizing: border-box;
+            margin-left: -3px;
+          "
+        >
+          <mrg5><%= stk_now.toLocaleString() %></mrg5>
+        </div>
+      </div>
+      <% stk_before = stk_now; }); %>
+    </div>
+
+    <div
+      style="clear: both; position: fixed; bottom: 0px; margin-left: 15px"
+      id="final_res_def"
+    >
+      <div class="opdiv" style="width: 600px"></div>
+      <div class="opdiv" style="width: 200px"></div>
+      <div class="opdiv" style="width: 200px"></div>
+    </div>
+  </body>
+
+  <script>
+    const def_unit = "<%= def_unit %>";
+    const def_unit_val = Number("<%= def_unit_val %>");
+
+    $("#rec_stock").on("click", Rec);
+    $("#stk_of").on("change", DefChanged);
+    $(".cal_new_change").on("change", CalChange);
+
+    let new_change = 0;
+    function CalChange() {
+      let rm = Number($("#rm_new_stk").val());
+      let sh = Number($("#sh_new_stk").val());
+      const dir = Number($("#dir_stk").val());
+      if (rm < 0 || sh < 0) {
+        new_change = 0;
+        $("#display_stk_change").html("error");
+      } else {
+        new_change = dir * (rm * def_unit_val + sh);
+        $("#display_stk_change").html(new_change + " " + def_unit);
+      }
+    }
+    function Rec() {
+      const data = {
+        id: $("#stk_of").val(),
+        date: $("#new_stk_date").val(),
+        des: $("#des_stk").val(),
+        change: new_change,
+      };
+
+      if ([data.date, data.des].includes("") || new_change === 0) {
+        alert("Enter Correct details.");
+        return;
+      }
+
+      $.post("/rec_stock", data)
+        .done(() => location.reload())
+        .fail(() => alert("Error saving data"));
+    }
+
+    function DefChanged() {
+      const i = $("#stk_of option:selected").index();
+      $.post("/def_on_stk_x", { data: i }, () => {
+        location.href = "/stock";
+      });
+    }
+  </script>
+</html>

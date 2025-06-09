@@ -37,7 +37,7 @@
       <option value="250">250</option>
       <option value="125">125</option>
       <option value="100">100</option>
-      <option value="1">1</option>
+      <option value="1000">1000</option>
     </select>
     <select id="new_unit">
       <% data.units.forEach(( i) => { %>
@@ -79,8 +79,8 @@
 
       if (
         gsm < 1 ||
-        sizeH < 1 ||
-        sizeW < 1 ||
+        sizeH < 0 ||
+        sizeW < 0 ||
         gsm > 999.9 ||
         sizeH > 99.9 ||
         sizeW > 99.9

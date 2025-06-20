@@ -4,7 +4,9 @@
   </div>
   <div class="opdiv opM" id= "<%= "op2M"+idx %>">
   <select class="slctPaper" name="slctPaper<%=idx %>" id="slctPaper<%=idx %>">
-    <%- slctPprHtml %>
+    <% names.forEach((i, ii) => { %>
+    <option value="<%= ii %>"><%= i %></option>
+    <% }); %>
   </select>
   <button id="aplySlctPprPrice<%=idx %>">></button>
   <input
@@ -44,6 +46,8 @@
 
 <script type="module">
   const idxx = "<%= idx %>";
+  const prices = JSON.parse("<%- JSON.stringify(prices) %>");
+  
   var deci = { minimumFractionDigits: 2, maximumFractionDigits: 2 };
   let priceOfSelectedPpr = 0;
   $("#op2M" + idxx).on("change", calOp2);
@@ -51,16 +55,18 @@
   $("#aplySlctPprPrice" + idxx).on("click", ApplySlctPprPrice);
 
   function calOp2() {
-    let thePrice = Number(
-      $("#slctPaperPrice" + idxx)
-        .val()
-        .replace(/,/g, "")
-    );
+    let key = $("#slctPaperPrice" + idxx).val();
+    let pricee = prices[key] || "0";
+    let thePrice = Number(pricee.replace(/,/g, ""));
+    
+  console.log(thePrice);
+
     let pprCount = Number(
       $("#pprcount" + idxx)
         .val()
         .replace(/,/g, "")
     );
+
     var extraPpr = Number($("#extraPpr" + idxx).val());
     var reem = Number($("#slctRm" + idxx).val());
     var outcome = (thePrice / reem) * (pprCount + extraPpr);
@@ -74,9 +80,15 @@
   }
   function GetSlctPprPrice() {
     priceOfSelectedPpr = $("#slctPaper" + idxx + " option:selected").data("pr");
+    console.log(priceOfSelectedPpr);
   }
   function ApplySlctPprPrice() {
-    $("#slctPaperPrice" + idxx).val(priceOfSelectedPpr.toLocaleString());
+    if (priceOfSelectedPpr !== undefined) {
+  $("#slctPaperPrice" + idxx).val(priceOfSelectedPpr.toLocaleString());
+} else {
+  console.warn("No data-pr value found for selected option.");
+}
+
     calOp2();
   }
   GetSlctPprPrice();

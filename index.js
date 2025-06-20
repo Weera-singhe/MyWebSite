@@ -9,10 +9,6 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const app = express();
 const port = 1999;
 
-const paperStockPath = __dirname + "/public/paperStock.json";
-const paperPricePath = __dirname + "/public/paperPrice.json";
-const paperDataPath = __dirname + "/public/paperData.json";
-
 app.use(express.json());
 app.use(express.static("public"));
 app.use(express.urlencoded({ extended: true }));
@@ -21,7 +17,7 @@ const db = new pg.Client({
   user: "postgres",
   host: "localhost",
   database: "my",
-  password: "",
+  password: "123456",
   port: 1234,
 });
 db.connect();
@@ -58,6 +54,18 @@ function GetUnits() {
       return { unit_vals, units };
     });
 }
+function GetPrices() {
+  return db
+    .query(
+      `SELECT pp.price FROM papers p LEFT JOIN (SELECT DISTINCT ON (price_id)
+      price_id,price FROM paper_price ORDER BY price_id, date DESC)
+      pp ON p.id = pp.price_id ORDER BY p.id ASC;`
+    )
+    .then((result) => {
+      const prices = result.rows.map((i) => i.price);
+      return { prices };
+    });
+}
 
 app.get("/", (req, res) => res.render("index.ejs"));
 
@@ -69,6 +77,12 @@ app.get("/papers", async (req, res) => {
    'units', (SELECT array_agg(unit) FROM units)) AS result;`);
   const data = result.rows[0].result;
   const { ids, names } = await GetIdsNames();
+  /*const resss = await db.query(
+    "SELECT date,change  FROM public.paper_stock where stock_id = '001010800880010006'"
+  );
+  console.log(resss.rows);*/
+  GetPrices();
+
   res.render("papers.ejs", { data, names });
 });
 
@@ -169,47 +183,18 @@ app.post("/rec_stock", async (req, res) => {
   }
 });
 
-app.get("/qt", (req, res) => {
-  res.render("qt.ejs", { slctPprHtml: GenAllPprHtml() });
+app.get("/qt", async (req, res) => {
+  const { ids, names } = await GetIdsNames();
+  const { unit_vals, units } = await GetUnits();
+  const { prices } = await GetPrices();
+  res.render("qt.ejs", {
+    names,
+    unit_vals,
+    units,
+    prices,
+  });
 });
 
 app.post("/qt", (req, res) => res.redirect("/qt"));
-
-app.post("/recStock", (req, res) => {
-  const { dt, des, diff, slctPaperId } = req.body;
-
-  try {
-    const json = fs.readFileSync(paperStockPath, "utf8");
-    const items = JSON.parse(json);
-
-    items[slctPaperId].push({ dt, des, diff: +diff });
-    items[slctPaperId].sort((a, b) => new Date(a.dt) - new Date(b.dt));
-
-    fs.writeFileSync(paperStockPath, JSON.stringify(items, null, 2));
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Stock error:", err);
-    res.status(500).json({ success: false });
-  }
-});
-
-function GenAllPprHtml() {
-  const pr = JSON.parse(fs.readFileSync(paperPricePath, "utf8"));
-  const pj = JSON.parse(fs.readFileSync(paperDataPath, "utf8"));
-  return pj.weHave
-    .map(
-      (p) =>
-        `<option data-pr='${pr[p.id][0]?.price}'data-id='${p.id}' data-un='${
-          p.units
-        }'>${pj.types[p.type]} ${pj.colors[p.color]} ${p.sizeH}x${p.sizeW} ${
-          p.gsm
-        }gsm ${pj.brands[p.brand]}</option>`
-    )
-    .join("");
-}
-function GetPprUnits() {
-  const pj = JSON.parse(fs.readFileSync(paperDataPath, "utf8"));
-  return pj.units;
-}
 
 app.listen(port, () => console.log("listening.."));
